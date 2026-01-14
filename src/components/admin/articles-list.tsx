@@ -6,7 +6,6 @@ import { Plus, Edit, Eye, CheckCircle, Clock } from "lucide-react";
 import Link from "next/link";
 import { formatRelativeTime } from "@/lib/utils/format";
 import { DeleteDialog } from "@/components/admin/delete-dialog";
-import { deleteArticle } from "@/actions/articles";
 import { useLanguage } from "@/lib/i18n/context";
 import { Header } from "@/components/admin/header";
 import type { Article } from "@/types";
@@ -14,9 +13,10 @@ import type { Article } from "@/types";
 interface ArticlesListProps {
   articles: Article[];
   total: number;
+  onDeleteArticle: (id: string) => Promise<{ error?: string }>;
 }
 
-export function ArticlesList({ articles, total }: ArticlesListProps) {
+export function ArticlesList({ articles, total, onDeleteArticle }: ArticlesListProps) {
   const { t } = useLanguage();
 
   return (
@@ -108,10 +108,7 @@ export function ArticlesList({ articles, total }: ArticlesListProps) {
                     <DeleteDialog
                       title={t("common.delete")}
                       description={t("articles.deleteConfirm")}
-                      onDelete={async () => {
-                        "use server";
-                        return deleteArticle(article.id);
-                      }}
+                      onDelete={() => onDeleteArticle(article.id)}
                     />
                   </div>
                 </div>
