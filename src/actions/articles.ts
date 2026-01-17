@@ -34,6 +34,7 @@ export async function getArticles(options?: {
         author: { select: { id: true, name: true, image: true } },
         category: { select: { id: true, name: true, slug: true, color: true } },
         tags: { include: { tag: true } },
+        images: { orderBy: { order: "asc" } },
         _count: { select: { comments: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -58,6 +59,7 @@ export async function getArticleBySlug(slug: string) {
       author: { select: { id: true, name: true, image: true } },
       category: { select: { id: true, name: true, slug: true, color: true } },
       tags: { include: { tag: true } },
+      images: { orderBy: { order: "asc" } },
       comments: {
         where: { approved: true },
         orderBy: { createdAt: "desc" },
@@ -73,6 +75,8 @@ export async function getArticleById(id: string) {
       author: { select: { id: true, name: true, image: true } },
       category: { select: { id: true, name: true, slug: true, color: true } },
       tags: { include: { tag: true } },
+      images: { orderBy: { order: "asc" } },
+      _count: { select: { comments: true } },
     },
   });
 }
@@ -235,4 +239,109 @@ export async function incrementArticleViews(slug: string) {
 
 export async function generateSlug(title: string) {
   return slugify(title);
+}
+
+export async function addArticleImage(articleId: string, data: { url: string; alt?: string; isMain?: boolean }) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    const existingImages = await db.articleImage.count({ where: { articleId } });
+    if (existingImages >= 3) {
+      return { error: "Maximum 3 images allowed per article" };
+    }
+
+    if (data.isMain) {
+      await db.articleImage.updateMany({
+        where: { articleId },
+        data: { isMain: false },
+      });
+    }
+
+    const image = await db.articleImage.create({
+      data: {
+        url: data.url,
+        alt: data.alt,
+        isMain: data.isMain || existingImages === 0,
+        order: existingImages,
+        articleId,
+      },
+    });
+
+    revalidatePath("/admin/articles");
+    revalidatePath("/blog");
+    return { success: true, image };
+  } catch (error) {
+    console.error("Error adding image:", error);
+    return { error: "Failed to add image" };
+  }
+}
+
+export async function deleteArticleImage(imageId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    const image = await db.articleImage.findUnique({ where: { id: imageId } });
+    if (!image) {
+      return { error: "Image not found" };
+    }
+
+    await db.articleImage.delete({ where: { id: imageId } });
+
+    if (image.isMain) {
+      const firstImage = await db.articleImage.findFirst({
+        where: { articleId: image.articleId },
+        orderBy: { order: "asc" },
+      });
+      if (firstImage) {
+        await db.articleImage.update({
+          where: { id: firstImage.id },
+          data: { isMain: true },
+        });
+      }
+    }
+
+    revalidatePath("/admin/articles");
+    revalidatePath("/blog");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    return { error: "Failed to delete image" };
+  }
+}
+
+export async function setMainImage(imageId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    const image = await db.articleImage.findUnique({ where: { id: imageId } });
+    if (!image) {
+      return { error: "Image not found" };
+    }
+
+    await db.articleImage.updateMany({
+      where: { articleId: image.articleId },
+      data: { isMain: false },
+    });
+
+    await db.articleImage.update({
+      where: { id: imageId },
+      data: { isMain: true },
+    });
+
+    revalidatePath("/admin/articles");
+    revalidatePath("/blog");
+    return { success: true };
+  } catch (error) {
+    console.error("Error setting main image:", error);
+    return { error: "Failed to set main image" };
+  }
 }

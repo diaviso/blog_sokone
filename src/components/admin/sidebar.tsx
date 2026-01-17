@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -11,7 +12,6 @@ import {
   MessageSquare,
   Users,
   LogOut,
-  BookOpen,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -92,8 +92,14 @@ export function Sidebar({ user }: SidebarProps) {
             collapsed && "opacity-0 w-0 overflow-hidden"
           )}
         >
-          <BookOpen className="h-6 w-6 text-primary" />
-          <span className="gradient-text">Sacred Blog</span>
+          <Image 
+            src="/image.png" 
+            alt="Khidmatoul Quran" 
+            width={32} 
+            height={32}
+            className="h-8 w-auto"
+          />
+          <span className="text-[#006400] font-bold text-sm">Khidmatoul Quran</span>
         </Link>
         <Button
           variant="ghost"

@@ -106,7 +106,32 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
         </header>
 
-        {article.featuredImage && (
+        {(article.images && article.images.length > 0) ? (
+          <div className="mb-8 space-y-4">
+            {article.images.find((img) => img.isMain) && (
+              <div className="relative aspect-video rounded-xl overflow-hidden">
+                <img
+                  src={article.images.find((img) => img.isMain)?.url || article.images[0]?.url}
+                  alt={article.images.find((img) => img.isMain)?.alt || article.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </div>
+            )}
+            {article.images.length > 1 && (
+              <div className="grid grid-cols-3 gap-4">
+                {article.images.filter((img) => !img.isMain).map((image) => (
+                  <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden">
+                    <img
+                      src={image.url}
+                      alt={image.alt || article.title}
+                      className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : article.featuredImage && (
           <div className="relative aspect-video mb-8 rounded-xl overflow-hidden">
             <img
               src={article.featuredImage}

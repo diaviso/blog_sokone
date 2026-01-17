@@ -16,12 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { ArticleImages } from "@/components/admin/article-images";
 import { createArticle, updateArticle, generateSlug } from "@/actions/articles";
 import { toast } from "sonner";
 import { Save, Eye, Loader2, X } from "lucide-react";
-import type { Article, Category, Tag } from "@/types";
+import type { Article, Category, Tag, ArticleImage } from "@/types";
 
 interface ArticleFormProps {
   article?: Article | null;
@@ -46,6 +46,7 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
   const [metaTitle, setMetaTitle] = useState(article?.metaTitle || "");
   const [metaDescription, setMetaDescription] = useState(article?.metaDescription || "");
   const [ogImage, setOgImage] = useState(article?.ogImage || "");
+  const [images, setImages] = useState<ArticleImage[]>(article?.images || []);
 
   useEffect(() => {
     if (!article && title && !slug) {
@@ -108,16 +109,16 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
               onCheckedChange={setPublished}
             />
             <Label htmlFor="published" className="font-medium">
-              {published ? "Published" : "Draft"}
+              {published ? "Publié" : "Brouillon"}
             </Label>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {article && (
-            <a href={`/blog/${article.slug}`} target="_blank" rel="noopener">
+            <a href={`/admin/articles/${article.id}/preview`} target="_blank" rel="noopener">
               <Button type="button" variant="outline" className="gap-2">
                 <Eye className="h-4 w-4" />
-                Preview
+                Prévisualiser
               </Button>
             </a>
           )}
@@ -127,7 +128,7 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {article ? "Update" : "Create"} Article
+            {article ? "Mettre à jour" : "Créer"}
           </Button>
         </div>
       </div>
@@ -136,16 +137,16 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Content</CardTitle>
+              <CardTitle>Contenu</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Titre</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter article title"
+                  placeholder="Entrez le titre de l'article"
                   className="text-lg font-medium"
                   required
                 />
@@ -163,18 +164,18 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Excerpt</Label>
+                <Label htmlFor="excerpt">Extrait</Label>
                 <Textarea
                   id="excerpt"
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="Brief description of the article"
+                  placeholder="Brève description de l'article"
                   rows={3}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Content</Label>
+                <Label>Contenu</Label>
                 <RichTextEditor content={content} onChange={setContent} />
               </div>
             </CardContent>
@@ -184,17 +185,20 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Organization</CardTitle>
+              <CardTitle>Organisation</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select value={categoryId} onValueChange={setCategoryId}>
+                <Label htmlFor="category">Catégorie</Label>
+                <Select 
+                  value={categoryId || "none"} 
+                  onValueChange={(value) => setCategoryId(value === "none" ? "" : value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Sélectionner une catégorie" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No category</SelectItem>
+                    <SelectItem value="none">Aucune catégorie</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         <div className="flex items-center gap-2">
@@ -227,13 +231,13 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
                     </Badge>
                   ))}
                   {tags.length === 0 && (
-                    <p className="text-sm text-muted-foreground">No tags available</p>
+                    <p className="text-sm text-muted-foreground">Aucun tag disponible</p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="featuredImage">Featured Image URL</Label>
+                <Label htmlFor="featuredImage">URL de l'image à la une</Label>
                 <Input
                   id="featuredImage"
                   value={featuredImage}
@@ -244,6 +248,14 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
             </CardContent>
           </Card>
 
+          {article && (
+            <ArticleImages
+              articleId={article.id}
+              images={images}
+              onImagesChange={setImages}
+            />
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>SEO</CardTitle>
@@ -251,7 +263,7 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="metaTitle">
-                  Meta Title
+                  Titre Meta
                   <span className="text-muted-foreground ml-2 text-xs">
                     ({metaTitle.length}/70)
                   </span>
@@ -260,14 +272,14 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
                   id="metaTitle"
                   value={metaTitle}
                   onChange={(e) => setMetaTitle(e.target.value)}
-                  placeholder="SEO title"
+                  placeholder="Titre SEO"
                   maxLength={70}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="metaDescription">
-                  Meta Description
+                  Description Meta
                   <span className="text-muted-foreground ml-2 text-xs">
                     ({metaDescription.length}/160)
                   </span>
@@ -276,14 +288,14 @@ export function ArticleForm({ article, categories, tags }: ArticleFormProps) {
                   id="metaDescription"
                   value={metaDescription}
                   onChange={(e) => setMetaDescription(e.target.value)}
-                  placeholder="SEO description"
+                  placeholder="Description SEO"
                   rows={3}
                   maxLength={160}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="ogImage">Open Graph Image URL</Label>
+                <Label htmlFor="ogImage">URL de l'image Open Graph</Label>
                 <Input
                   id="ogImage"
                   value={ogImage}

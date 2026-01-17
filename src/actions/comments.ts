@@ -55,7 +55,10 @@ export async function createComment(data: CommentInput) {
 
   try {
     const comment = await db.comment.create({
-      data: validatedFields.data,
+      data: {
+        ...validatedFields.data,
+        approved: true,
+      },
     });
 
     revalidatePath(`/blog/${article.slug}`);

@@ -26,6 +26,16 @@ export interface TagOnArticle {
   articleId: string;
 }
 
+export interface ArticleImage {
+  id: string;
+  url: string;
+  alt?: string | null;
+  isMain: boolean;
+  order: number;
+  createdAt: Date;
+  articleId: string;
+}
+
 export interface Comment {
   id: string;
   content: string;
@@ -63,6 +73,7 @@ export interface Article {
   category?: Category | null;
   tags?: TagOnArticle[];
   comments?: Comment[];
+  images?: ArticleImage[];
   _count?: { comments: number };
 }
 

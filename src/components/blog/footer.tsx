@@ -1,33 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Heart } from "lucide-react";
+import Image from "next/image";
+import { Heart } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 
 export function BlogFooter() {
   const { t } = useLanguage();
 
   return (
-    <footer className="border-t border-border bg-muted/30">
+    <footer className="border-t border-border bg-[#006400] text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
-            <Link href="/blog" className="flex items-center gap-2 mb-4">
-              <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">Sacred Blog</span>
+            <Link href="/blog" className="flex items-center gap-3 mb-4">
+              <Image 
+                src="/image.png" 
+                alt="Khidmatoul Quran" 
+                width={56} 
+                height={56}
+                className="h-14 w-auto bg-white rounded-lg p-1"
+              />
+              <div>
+                <span className="text-xl font-bold text-white">KHIDMATOUL QURAN</span>
+                <p className="text-sm text-white/80">Keur Cheikh El Hadji Amadou DEME</p>
+              </div>
             </Link>
-            <p className="text-muted-foreground max-w-md">
+            <p className="text-white/80 max-w-md">
               {t("footer.description")}
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">{t("footer.quickLinks")}</h3>
+            <h3 className="font-semibold mb-4 text-[#C0A060]">{t("footer.quickLinks")}</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/blog"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-white/80 hover:text-white transition-colors"
                 >
                   {t("common.home")}
                 </Link>
@@ -35,7 +45,7 @@ export function BlogFooter() {
               <li>
                 <Link
                   href="/blog/search"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-white/80 hover:text-white transition-colors"
                 >
                   {t("common.search")}
                 </Link>
@@ -44,21 +54,20 @@ export function BlogFooter() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">{t("footer.contact")}</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>contact@sacredblog.org</li>
-              <li>123 Faith Street</li>
-              <li>Holy City, HC 12345</li>
+            <h3 className="font-semibold mb-4 text-[#C0A060]">{t("footer.contact")}</h3>
+            <ul className="space-y-2 text-white/80">
+              <li>contact@khidmatoulquran.org</li>
+              <li>Sokone, Sénégal</li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Sacred Blog. {t("footer.allRightsReserved")}
+        <div className="mt-12 pt-8 border-t border-white/20 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-white/80">
+            © {new Date().getFullYear()} Khidmatoul Quran. {t("footer.allRightsReserved")}
           </p>
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            {t("footer.madeWith")} <Heart className="h-4 w-4 text-red-500" /> {t("footer.forCommunity")}
+          <p className="text-sm text-white/80 flex items-center gap-1">
+            {t("footer.madeWith")} <Heart className="h-4 w-4 text-[#C0A060]" /> {t("footer.forCommunity")}
           </p>
         </div>
       </div>

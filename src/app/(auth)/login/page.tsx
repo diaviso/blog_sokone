@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { loginAction } from "@/actions/auth";
 import { useActionState } from "react";
 import { useLanguage } from "@/lib/i18n/context";
@@ -24,20 +25,26 @@ export default function LoginPage() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-background p-4">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#006400]/10 via-background to-background p-4">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#006400]/10 via-transparent to-transparent" />
       
       <div className="absolute top-4 right-4 flex items-center gap-2">
         <ThemeToggle />
         <LanguageToggle />
       </div>
       
-      <Card className="w-full max-w-md relative shadow-2xl border-border/50">
+      <Card className="w-full max-w-md relative shadow-2xl border-[#006400]/20">
         <CardHeader className="text-center pb-2">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center">
-            <BookOpen className="h-7 w-7 text-primary" />
+          <div className="mx-auto mb-4">
+            <Image 
+              src="/image.png" 
+              alt="Khidmatoul Quran" 
+              width={80} 
+              height={80}
+              className="h-20 w-auto"
+            />
           </div>
-          <CardTitle className="text-2xl font-bold">{t("auth.welcomeBack")}</CardTitle>
+          <CardTitle className="text-2xl font-bold text-[#006400]">Khidmatoul Quran</CardTitle>
           <CardDescription>
             {t("auth.signInDescription")}
           </CardDescription>

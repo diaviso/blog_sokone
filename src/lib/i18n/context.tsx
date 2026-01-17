@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { translations, Language, TranslationKeys } from "./translations";
 
 type NestedKeyOf<T> = T extends object
@@ -40,10 +40,12 @@ function getNestedValue(obj: Record<string, unknown>, path: string): string {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("fr");
-  const [mounted, setMounted] = useState(false);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    setMounted(true);
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+    
     const saved = localStorage.getItem("language") as Language;
     if (saved && (saved === "fr" || saved === "en")) {
       setLanguageState(saved);
@@ -73,16 +75,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     [language]
   );
 
-  if (!mounted) {
-    return (
-      <LanguageContext.Provider value={{ language: "fr", setLanguage, t }}>
-        {children}
-      </LanguageContext.Provider>
-    );
-  }
+  const contextValue = useMemo(
+    () => ({ language, setLanguage, t }),
+    [language, setLanguage, t]
+  );
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );

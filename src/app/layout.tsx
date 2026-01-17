@@ -17,16 +17,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sacred Blog - Association Religieuse",
-    template: "%s | Sacred Blog",
+    default: "Khidmatoul Quran - Keur Cheikh El Hadji Amadou DEME",
+    template: "%s | Khidmatoul Quran",
   },
-  description: "Un espace de réflexion spirituelle, d'actualités communautaires et d'enseignements religieux. Rejoignez-nous dans notre voyage de foi et de découverte.",
-  keywords: ["religion", "spiritualité", "foi", "communauté", "blog", "enseignements"],
-  authors: [{ name: "Sacred Blog" }],
+  description: "Khidmatoul Quran - Keur Cheikh El Hadji Amadou DEME. Incarner l'excellence au service du Livre Saint, le Coran. Une plateforme dédiée à la spiritualité, la rigueur et l'engagement.",
+  keywords: ["islam", "coran", "quran", "spiritualité", "foi", "communauté", "blog", "enseignements", "sokone", "sénégal"],
+  authors: [{ name: "Khidmatoul Quran" }],
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    siteName: "Sacred Blog",
+    siteName: "Khidmatoul Quran",
   },
   twitter: {
     card: "summary_large_image",
